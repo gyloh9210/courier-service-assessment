@@ -1,4 +1,4 @@
-import Offer from '../src/entities/Offer';
+import Offer from '../../src/entities/Offer';
 
 describe('Offer', function () {
   describe('#validateRule', function () {
@@ -23,6 +23,31 @@ describe('Offer', function () {
       } catch (err) {
         expect(err).toStrictEqual(
           new Error('Invalid rule. You need to provide a range.')
+        );
+      }
+    });
+
+    it('should return error if operator is greater than but given an object', () => {
+      try {
+        new Offer({
+          rules: {
+            distance: {
+              operator: 'lt',
+              threshold: 10
+            },
+            weight: {
+              operator: 'gt',
+              threshold: {
+                from: 10,
+                to: 150
+              }
+            }
+          },
+          discount: 5
+        });
+      } catch (err) {
+        expect(err).toStrictEqual(
+          new Error('Invalid rule. You need to provide a number.')
         );
       }
     });

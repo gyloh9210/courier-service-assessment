@@ -28,6 +28,10 @@ class Offer {
     if (rule.operator === 'bt' && typeof rule.threshold !== 'object') {
       throw new Error('Invalid rule. You need to provide a range.');
     }
+
+    if (rule.operator !== 'bt' && typeof rule.threshold !== 'number') {
+      throw new Error('Invalid rule. You need to provide a number.');
+    }
   }
 
   validateCriteria(given: number, discountRule: Rule) {
