@@ -6,34 +6,38 @@ type DeliveryCost = {
   discount: number;
 };
 
-class Package {
+class Parcel {
   id: string;
   weight: number;
   baseDeliveryCost: number;
   distance: number;
+  offer: Offer | null;
 
   constructor({
     id,
     weight,
     baseDeliveryCost,
-    distance
+    distance,
+    offer = null
   }: {
     id: string;
     weight: number;
     baseDeliveryCost: number;
     distance: number;
+    offer?: Offer | null;
   }) {
     this.id = id;
     this.weight = weight;
     this.baseDeliveryCost = baseDeliveryCost;
     this.distance = distance;
+    this.offer = offer;
   }
 
-  calculateDeliveryCost(offer?: Offer | null): DeliveryCost {
+  calculateDeliveryCost(): DeliveryCost {
     const deliveryCost =
       this.baseDeliveryCost + this.weight * 10 + this.distance * 5;
 
-    if (!offer) {
+    if (!this.offer) {
       return {
         total: deliveryCost,
         subtotal: deliveryCost,
@@ -41,7 +45,7 @@ class Package {
       };
     }
 
-    const discount = offer.calculateDiscount({
+    const discount = this.offer.calculateDiscount({
       weight: this.weight,
       distance: this.distance,
       total: deliveryCost
@@ -55,4 +59,4 @@ class Package {
   }
 }
 
-export default Package;
+export default Parcel;
