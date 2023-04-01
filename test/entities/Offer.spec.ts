@@ -18,7 +18,8 @@ describe('Offer', function () {
               }
             }
           },
-          discount: 5
+          discount: 5,
+          title: 'OFFER1'
         });
       } catch (err) {
         expect(err).toStrictEqual(
@@ -43,7 +44,8 @@ describe('Offer', function () {
               }
             }
           },
-          discount: 5
+          discount: 5,
+          title: 'OFFER01'
         });
       } catch (err) {
         expect(err).toStrictEqual(
@@ -66,7 +68,8 @@ describe('Offer', function () {
             threshold: 50
           }
         },
-        discount: 5
+        discount: 5,
+        title: 'OFFER02'
       });
 
       expect(offer.validateCriteria(10, offer.rules.distance)).toBeTruthy();
@@ -84,7 +87,8 @@ describe('Offer', function () {
             threshold: 50
           }
         },
-        discount: 5
+        discount: 5,
+        title: 'OFFER02'
       });
 
       expect(offer.validateCriteria(30, offer.rules.distance)).toBeTruthy();
@@ -105,7 +109,8 @@ describe('Offer', function () {
             threshold: 50
           }
         },
-        discount: 5
+        discount: 5,
+        title: 'OFFER02'
       });
 
       expect(offer.validateCriteria(15, offer.rules.distance)).toBeTruthy();
@@ -126,7 +131,8 @@ describe('Offer', function () {
             threshold: 50
           }
         },
-        discount: 5
+        discount: 5,
+        title: 'OFFER02'
       });
 
       expect(offer.validateCriteria(10, offer.rules.distance)).toBeFalsy();
@@ -146,7 +152,8 @@ describe('Offer', function () {
             threshold: 50
           }
         },
-        discount: 5
+        discount: 5,
+        title: 'OFFER02'
       });
 
       expect(
@@ -170,7 +177,8 @@ describe('Offer', function () {
             threshold: 50
           }
         },
-        discount: 5
+        discount: 5,
+        title: 'OFFER02'
       });
 
       expect(

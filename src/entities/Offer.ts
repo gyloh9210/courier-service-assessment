@@ -14,11 +14,25 @@ type Rules = {
 
 class Offer {
   rules: Rules;
+  title: string;
+
+  /**
+   * Discount Percentage
+   */
   discount: number;
 
-  constructor({ rules, discount }: { rules: Rules; discount: number }) {
+  constructor({
+    rules,
+    discount,
+    title
+  }: {
+    rules: Rules;
+    discount: number;
+    title: string;
+  }) {
     this.rules = rules;
     this.discount = discount;
+    this.title = title;
 
     this.validateRules(rules.distance);
     this.validateRules(rules.weight);
