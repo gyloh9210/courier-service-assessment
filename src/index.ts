@@ -1,1 +1,184 @@
-console.log("hello world")
+import Fleet from './entities/Fleet';
+import Offer from './entities/Offer';
+import Parcel from './entities/Parcel';
+import * as readline from 'readline';
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+type courier = {
+  baseDeliveryCost: number;
+  noOfParcel: number;
+};
+
+type parcel = {
+  id: string;
+  weight: string;
+  distance: string;
+  offer?: Offer | undefined;
+};
+
+type fleet = {
+  vehicleQty: number;
+  maxLoad: number;
+  maxSpeed: number;
+};
+
+const ofr001 = new Offer({
+  rules: {
+    distance: {
+      operator: 'lt',
+      threshold: 200
+    },
+    weight: {
+      operator: 'bt',
+      threshold: {
+        from: 70,
+        to: 200
+      }
+    }
+  },
+  discount: 10,
+  title: 'OFR001'
+});
+
+const ofr002 = new Offer({
+  rules: {
+    distance: {
+      operator: 'bt',
+      threshold: {
+        from: 50,
+        to: 150
+      }
+    },
+    weight: {
+      operator: 'bt',
+      threshold: {
+        from: 100,
+        to: 250
+      }
+    }
+  },
+  discount: 7,
+  title: 'OFR002'
+});
+
+const ofr003 = new Offer({
+  rules: {
+    distance: {
+      operator: 'bt',
+      threshold: {
+        from: 50,
+        to: 250
+      }
+    },
+    weight: {
+      operator: 'bt',
+      threshold: {
+        from: 10,
+        to: 150
+      }
+    }
+  },
+  discount: 5,
+  title: 'OFR003'
+});
+
+const offers: Offer[] = [ofr001, ofr002, ofr003];
+
+const parseCourierInput = (input: string): courier => {
+  const inputArr = input.split(' ');
+
+  return {
+    baseDeliveryCost: parseInt(inputArr[0]),
+    noOfParcel: parseInt(inputArr[1])
+  };
+};
+
+const parseParcelInput = (input: string): parcel => {
+  const inputArr = input.split(' ');
+
+  const offer = offers.find((offer) => offer.title === inputArr[3]);
+
+  return {
+    id: inputArr[0],
+    weight: inputArr[1],
+    distance: inputArr[2],
+    offer
+  };
+};
+
+const parseFleetInput = (input: string): fleet => {
+  const inputArr = input.split(' ');
+
+  return {
+    vehicleQty: parseInt(inputArr[0]),
+    maxSpeed: parseInt(inputArr[1]),
+    maxLoad: parseInt(inputArr[2])
+  };
+};
+
+const main = async () => {
+  let parcels: Parcel[] = [];
+
+  // Ask for base delivery cost and number of parcels
+  const rawCourierInput = (await new Promise((resolve) =>
+    rl.question('[baseDeliveryCost] [no. of parcel]', resolve)
+  )) as string;
+  const parsedCourierInput = parseCourierInput(rawCourierInput);
+
+  const parcelInputs = Array.from(
+    Array(parsedCourierInput.noOfParcel).keys()
+  ).map(() => '[pkg_id] [pkg_weight] [pkg_distance] [offer]');
+
+  // Ask for each package info: id, weight, distance and offer
+  for (const parcelInput of parcelInputs) {
+    const rawParcelInput = (await new Promise((resolve) =>
+      rl.question(parcelInput, resolve)
+    )) as string;
+
+    const parsedParcelInput = parseParcelInput(rawParcelInput);
+
+    parcels.push(
+      new Parcel({
+        id: parsedParcelInput.id,
+        baseDeliveryCost: parsedCourierInput.baseDeliveryCost,
+        weight: parseInt(parsedParcelInput.weight),
+        distance: parseInt(parsedParcelInput.distance),
+        offer: parsedParcelInput.offer
+      })
+    );
+  }
+
+  // Ask for number of vehicles, max speed and max carriable weight
+  const rawFleetInput = (await new Promise((resolve) =>
+    rl.question('[no_of_vehicles] [max_speed] [max_carriable_weight]', resolve)
+  )) as string;
+  const parsedFleetInput = parseFleetInput(rawFleetInput);
+
+  // Close input
+  rl.close();
+
+  const fleet = new Fleet({
+    parcels,
+    maxSpeed: parsedFleetInput.maxSpeed,
+    maxLoad: parsedFleetInput.maxLoad,
+    vehicleQty: parsedFleetInput.vehicleQty
+  });
+  parcels = fleet.start();
+
+  console.log(
+    'Result:\n',
+    parcels
+      .map((parcel) => {
+        const cost = parcel.calculateDeliveryCost();
+
+        return `${parcel.id} ${cost.discount} ${cost.total} ${parcel.deliveryTime}`;
+      })
+      .join('\n')
+  );
+};
+
+main();
