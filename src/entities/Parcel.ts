@@ -12,25 +12,29 @@ class Parcel {
   baseDeliveryCost: number;
   distance: number;
   offer: Offer | null;
+  deliveryTime: string;
 
   constructor({
     id,
     weight,
     baseDeliveryCost,
     distance,
-    offer = null
+    offer = null,
+    deliveryTime = ''
   }: {
     id: string;
     weight: number;
     baseDeliveryCost: number;
     distance: number;
     offer?: Offer | null;
+    deliveryTime?: string;
   }) {
     this.id = id;
     this.weight = weight;
     this.baseDeliveryCost = baseDeliveryCost;
     this.distance = distance;
     this.offer = offer;
+    this.deliveryTime = deliveryTime;
   }
 
   calculateDeliveryCost(): DeliveryCost {
