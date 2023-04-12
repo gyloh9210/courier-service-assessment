@@ -91,6 +91,10 @@ const offers: Offer[] = [ofr001, ofr002, ofr003];
 const parseCourierInput = (input: string): courier => {
   const inputArr = input.split(' ');
 
+  if (inputArr.length < 2) {
+    throw new Error('Your courier input is invalid');
+  }
+
   return {
     baseDeliveryCost: parseInt(inputArr[0]),
     noOfParcel: parseInt(inputArr[1])
@@ -99,6 +103,10 @@ const parseCourierInput = (input: string): courier => {
 
 const parseParcelInput = (input: string): parcel => {
   const inputArr = input.split(' ');
+
+  if (inputArr.length < 4) {
+    throw new Error('Your parcel input is invalid');
+  }
 
   const offer = offers.find((offer) => offer.title === inputArr[3]);
 
@@ -112,6 +120,10 @@ const parseParcelInput = (input: string): parcel => {
 
 const parseFleetInput = (input: string): fleet => {
   const inputArr = input.split(' ');
+
+  if (inputArr.length < 3) {
+    throw new Error('Your fleet input is invalid');
+  }
 
   return {
     vehicleQty: parseInt(inputArr[0]),
