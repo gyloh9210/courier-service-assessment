@@ -24,8 +24,8 @@ class Fleet {
     this.vehicleQty = vehicleQty;
   }
 
-  // Find subsets that add up to the target sum and return an array of parcel sets
-  findPossibleParcelSets(parcels: Parcel[], maxLoad: number): Parcel[][] {
+  // Sort parcels by heaviest order
+  sortByHeaviestWeight(parcels: Parcel[]) {
     // Extract the weight attribute from each Parcel object and create a list of weights
     const weights: Pick<Parcel, 'weight' | 'id'>[] = parcels.map((parcel) => ({
       weight: parcel.weight,
@@ -35,10 +35,22 @@ class Fleet {
     // Sort the array in descending order
     weights.sort((a, b) => b.weight - a.weight);
 
+    return weights;
+  }
+
+  // Iterate over the weights and find subsets that add up to the target sum
+  matchSetsByMaxload({
+    weights,
+    parcels,
+    maxLoad
+  }: {
+    weights: Pick<Parcel, 'weight' | 'id'>[];
+    parcels: Parcel[];
+    maxLoad: number;
+  }) {
     // Initialize an empty array to store the subsets
     let subsets: Parcel[][] = [];
 
-    // Iterate over the weights and find subsets that add up to the target sum
     for (let i = 0; i < weights.length; i++) {
       const newSubsets: Parcel[][] = [];
       const weight = weights[i].weight;
@@ -78,6 +90,19 @@ class Fleet {
         ]);
       }
     }
+
+    return subsets;
+  }
+
+  // Find subsets that add up to the target sum and return an array of parcel sets
+  findPossibleParcelSets(parcels: Parcel[], maxLoad: number): Parcel[][] {
+    const weights = this.sortByHeaviestWeight(parcels);
+
+    const subsets: Parcel[][] = this.matchSetsByMaxload({
+      maxLoad,
+      parcels,
+      weights
+    });
 
     // Filter out subsets that exceed the target sum and group the remaining subsets by Parcel objects
     const groupedSubsets: Parcel[][] = [];

@@ -91,6 +91,119 @@ describe('Fleet', () => {
     });
   });
 
+  describe('#sortByHeaviestWeight', () => {
+    it('should return parcels in heaviest order', () => {
+      const result = fleet.sortByHeaviestWeight([
+        new Parcel({
+          id: 'pkg1',
+          weight: 100,
+          baseDeliveryCost: 100,
+          distance: 70
+        }),
+        new Parcel({
+          id: 'pkg2',
+          weight: 10,
+          baseDeliveryCost: 100,
+          distance: 70
+        }),
+        new Parcel({
+          id: 'pkg3',
+          weight: 50,
+          baseDeliveryCost: 100,
+          distance: 70
+        })
+      ]);
+
+      expect(result).toEqual([
+        {
+          id: 'pkg1',
+          weight: 100
+        },
+        {
+          id: 'pkg3',
+          weight: 50
+        },
+        {
+          id: 'pkg2',
+          weight: 10
+        }
+      ]);
+    });
+  });
+
+  describe('#matchSetsByMaxload', () => {
+    it('should return all sets which not exceed a given max load', () => {
+      const result = fleet.matchSetsByMaxload({
+        weights: [
+          {
+            id: 'pkg1',
+            weight: 100
+          },
+          {
+            id: 'pkg3',
+            weight: 50
+          }
+        ],
+        parcels: [
+          new Parcel({
+            id: 'pkg1',
+            weight: 100,
+            baseDeliveryCost: 100,
+            distance: 70
+          }),
+          new Parcel({
+            id: 'pkg3',
+            weight: 50,
+            baseDeliveryCost: 100,
+            distance: 70
+          })
+        ],
+        maxLoad: 150
+      });
+
+      expect(result).toEqual([
+        [
+          new Parcel({
+            baseDeliveryCost: 100,
+            deliveryTime: '',
+            distance: 70,
+            id: 'pkg1',
+            offer: null,
+            weight: 100
+          })
+        ],
+        [
+          new Parcel({
+            baseDeliveryCost: 100,
+            deliveryTime: '',
+            distance: 70,
+            id: 'pkg1',
+            offer: null,
+            weight: 100
+          }),
+          new Parcel({
+            baseDeliveryCost: 100,
+            deliveryTime: '',
+            distance: 70,
+            id: 'pkg3',
+            offer: null,
+            weight: 50
+          })
+        ],
+        [
+          new Parcel({
+            baseDeliveryCost: 100,
+            deliveryTime: '',
+            distance: 70,
+            id: 'pkg3',
+            offer: null,
+            weight: 50
+          })
+        ]
+      ]);
+    });
+  });
+
   describe('#sortByPriority', () => {
     it('should return parcels in heaviest, with shortest distance and most parcels in a set', () => {
       const result = fleet.sortByPriority([
