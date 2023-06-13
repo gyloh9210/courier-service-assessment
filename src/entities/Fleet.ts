@@ -103,20 +103,25 @@ class Fleet {
 
   // Sort parcel sets by heaviest weight and shortest distance
   sortByPriority(parcelSets: Parcel[][]) {
-    return parcelSets.sort((a, b) => {
-      const aTotalWeight = a.reduce((acc, obj) => acc + obj.weight, 0);
-      const bTotalWeight = b.reduce((acc, obj) => acc + obj.weight, 0);
-      const aTotalDistance = a.reduce((acc, obj) => acc + obj.distance, 0);
-      const bTotalDistance = b.reduce((acc, obj) => acc + obj.distance, 0);
+    return parcelSets
+      .sort((a, b) => {
+        const aTotalWeight = a.reduce((acc, obj) => acc + obj.weight, 0);
+        const bTotalWeight = b.reduce((acc, obj) => acc + obj.weight, 0);
+        const aTotalDistance = a.reduce((acc, obj) => acc + obj.distance, 0);
+        const bTotalDistance = b.reduce((acc, obj) => acc + obj.distance, 0);
 
-      // If both weight are similar, take the shorter distance one
-      if (aTotalWeight === bTotalWeight) {
-        return aTotalDistance < bTotalDistance ? -1 : 1;
-      } else {
-        // Else, take the heaviest
-        return aTotalWeight > bTotalWeight ? -1 : 1;
-      }
-    });
+        // If both weight are similar, take the shorter distance one
+        if (aTotalWeight === bTotalWeight) {
+          return aTotalDistance < bTotalDistance ? -1 : 1;
+        } else {
+          // Else, take the heaviest
+          return aTotalWeight > bTotalWeight ? -1 : 1;
+        }
+      })
+      .sort((a, b) => {
+        // Prioritize the most amount of a parcel set. Eg: if set A has 2 parcels while set B has 4 parcels, will push set B to the top
+        return b.length - a.length;
+      });
   }
 
   // Deduplicate assigned parcels from a list

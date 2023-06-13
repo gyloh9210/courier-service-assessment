@@ -92,7 +92,7 @@ describe('Fleet', () => {
   });
 
   describe('#sortByPriority', () => {
-    it('should return parcels in heaviest and with shortest distance', () => {
+    it('should return parcels in heaviest, with shortest distance and most parcels in a set', () => {
       const result = fleet.sortByPriority([
         [
           new Parcel({
@@ -121,24 +121,30 @@ describe('Fleet', () => {
       expect(result).toEqual([
         [
           new Parcel({
-            id: 'pkg5',
-            weight: 155,
-            baseDeliveryCost: 100,
-            distance: 95
-          })
-        ],
-        [
-          new Parcel({
             id: 'pkg3',
             weight: 100,
             baseDeliveryCost: 100,
-            distance: 70
+            distance: 70,
+            offer: null,
+            deliveryTime: ''
           }),
           new Parcel({
             id: 'pkg2',
             weight: 55,
             baseDeliveryCost: 100,
-            distance: 30
+            distance: 30,
+            offer: null,
+            deliveryTime: ''
+          })
+        ],
+        [
+          new Parcel({
+            id: 'pkg5',
+            weight: 155,
+            baseDeliveryCost: 100,
+            distance: 95,
+            offer: null,
+            deliveryTime: ''
           })
         ]
       ]);
