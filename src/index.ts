@@ -62,6 +62,8 @@ const parseFleetInput = (input: string): FleetInput => {
   };
 };
 
+const isDeliveryTimeSkipped = (input: string): boolean => input === 'n';
+
 const main = async () => {
   let parcels: Parcel[] = [];
 
@@ -94,22 +96,35 @@ const main = async () => {
     );
   }
 
-  // Ask for number of vehicles, max speed and max carriable weight
-  const rawFleetInput = (await new Promise((resolve) =>
-    rl.question('[no_of_vehicles] [max_speed] [max_carriable_weight]', resolve)
+  const toCalculateCostInput = (await new Promise((resolve) =>
+    rl.question('Do you want to calculate each delivery cost? (y/n)', resolve)
   )) as string;
-  const parsedFleetInput = parseFleetInput(rawFleetInput);
+  const deliveryTimeSkipped = isDeliveryTimeSkipped(toCalculateCostInput);
 
-  // Close input
-  rl.close();
+  // Terminate cmd if intend to skip delivery time calculation
+  if (deliveryTimeSkipped) {
+    rl.close();
+  } else {
+    // Ask for number of vehicles, max speed and max carriable weight
+    const rawFleetInput = (await new Promise((resolve) =>
+      rl.question(
+        '[no_of_vehicles] [max_speed] [max_carriable_weight]',
+        resolve
+      )
+    )) as string;
+    const parsedFleetInput = parseFleetInput(rawFleetInput);
 
-  const fleet = new Fleet({
-    parcels,
-    maxSpeed: parsedFleetInput.maxSpeed,
-    maxLoad: parsedFleetInput.maxLoad,
-    vehicleQty: parsedFleetInput.vehicleQty
-  });
-  parcels = fleet.start();
+    // Close input
+    rl.close();
+
+    const fleet = new Fleet({
+      parcels,
+      maxSpeed: parsedFleetInput.maxSpeed,
+      maxLoad: parsedFleetInput.maxLoad,
+      vehicleQty: parsedFleetInput.vehicleQty
+    });
+    parcels = fleet.start();
+  }
 
   console.log(
     'Result:\n',
@@ -122,5 +137,53 @@ const main = async () => {
       .join('\n')
   );
 };
+
+// const testMain = async () => {
+//   const parcel1 = new Parcel({
+//     id: 'pkg1',
+//     weight: 50,
+//     distance: 30,
+//     baseDeliveryCost: 100
+//   });
+
+//   const parcel2 = new Parcel({
+//     id: 'pkg2',
+//     weight: 75,
+//     distance: 125,
+//     baseDeliveryCost: 100
+//   });
+
+//   const parcel3 = new Parcel({
+//     id: 'pkg3',
+//     weight: 175,
+//     distance: 100,
+//     baseDeliveryCost: 100
+//   });
+
+//   const parcel4 = new Parcel({
+//     id: 'pkg4',
+//     weight: 110,
+//     distance: 60,
+//     baseDeliveryCost: 100
+//   });
+
+//   const parcel5 = new Parcel({
+//     id: 'pkg5',
+//     weight: 155,
+//     distance: 95,
+//     baseDeliveryCost: 100
+//   });
+
+//   const fleet = new Fleet({
+//     parcels: [parcel1, parcel2, parcel3, parcel4, parcel5],
+//     maxSpeed: 70,
+//     maxLoad: 200,
+//     vehicleQty: 2
+//   });
+
+//   fleet.start();
+// };
+
+// testMain();
 
 main();
