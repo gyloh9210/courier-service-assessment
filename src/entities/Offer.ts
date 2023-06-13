@@ -1,17 +1,4 @@
-type Operator = 'lt' | 'gt' | 'bt';
-type Range = {
-  from: number;
-  to: number;
-};
-type Rule = {
-  operator: Operator;
-  threshold: number | Range;
-};
-type Rules = {
-  weight: Rule;
-  distance: Rule;
-};
-
+import { Rules, Rule, Range } from '../types';
 class Offer {
   rules: Rules;
   title: string;

@@ -1,9 +1,5 @@
+import { Courier } from '../types';
 import Parcel from './Parcel';
-
-type Courier = {
-  totalTimeTaken: number;
-  id: number;
-};
 
 class Fleet {
   parcels: Parcel[];

@@ -1,0 +1,61 @@
+{
+  "offers": [
+    {
+      "rules": {
+        "distance": {
+          "operator": "lt",
+          "threshold": 200
+        },
+        "weight": {
+          "operator": "bt",
+          "threshold": {
+            "from": 70,
+            "to": 200
+          }
+        }
+      },
+      "discount": 10,
+      "title": "OFR001"
+    },
+    {
+      "rules": {
+        "distance": {
+          "operator": "bt",
+          "threshold": {
+            "from": 50,
+            "to": 150
+          }
+        },
+        "weight": {
+          "operator": "bt",
+          "threshold": {
+            "from": 100,
+            "to": 250
+          }
+        }
+      },
+      "discount": 7,
+      "title": "OFR002"
+    },
+    {
+      "rules": {
+        "distance": {
+          "operator": "bt",
+          "threshold": {
+            "from": 50,
+            "to": 250
+          }
+        },
+        "weight": {
+          "operator": "bt",
+          "threshold": {
+            "from": 10,
+            "to": 150
+          }
+        }
+      },
+      "discount": 5,
+      "title": "OFR003"
+    }
+  ]
+}

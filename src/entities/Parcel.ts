@@ -1,10 +1,5 @@
+import { DeliveryCost } from '../types';
 import Offer from './Offer';
-
-type DeliveryCost = {
-  total: number;
-  subtotal: number;
-  discount: number;
-};
 
 class Parcel {
   id: string;

@@ -1,94 +1,24 @@
 import Fleet from './entities/Fleet';
 import Offer from './entities/Offer';
 import Parcel from './entities/Parcel';
+import OffersJson from './offers.json';
 import * as readline from 'readline';
+import { CourierInput, FleetInput, OfferType, ParcelInput } from './types';
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-type courier = {
-  baseDeliveryCost: number;
-  noOfParcel: number;
-};
+const ofr001 = new Offer(OffersJson.offers[0] as OfferType);
 
-type parcel = {
-  id: string;
-  weight: string;
-  distance: string;
-  offer?: Offer | undefined;
-};
+const ofr002 = new Offer(OffersJson.offers[1] as OfferType);
 
-type fleet = {
-  vehicleQty: number;
-  maxLoad: number;
-  maxSpeed: number;
-};
-
-const ofr001 = new Offer({
-  rules: {
-    distance: {
-      operator: 'lt',
-      threshold: 200
-    },
-    weight: {
-      operator: 'bt',
-      threshold: {
-        from: 70,
-        to: 200
-      }
-    }
-  },
-  discount: 10,
-  title: 'OFR001'
-});
-
-const ofr002 = new Offer({
-  rules: {
-    distance: {
-      operator: 'bt',
-      threshold: {
-        from: 50,
-        to: 150
-      }
-    },
-    weight: {
-      operator: 'bt',
-      threshold: {
-        from: 100,
-        to: 250
-      }
-    }
-  },
-  discount: 7,
-  title: 'OFR002'
-});
-
-const ofr003 = new Offer({
-  rules: {
-    distance: {
-      operator: 'bt',
-      threshold: {
-        from: 50,
-        to: 250
-      }
-    },
-    weight: {
-      operator: 'bt',
-      threshold: {
-        from: 10,
-        to: 150
-      }
-    }
-  },
-  discount: 5,
-  title: 'OFR003'
-});
+const ofr003 = new Offer(OffersJson.offers[2] as OfferType);
 
 const offers: Offer[] = [ofr001, ofr002, ofr003];
 
-const parseCourierInput = (input: string): courier => {
+const parseCourierInput = (input: string): CourierInput => {
   const inputArr = input.split(' ');
 
   if (inputArr.length < 2) {
@@ -101,7 +31,7 @@ const parseCourierInput = (input: string): courier => {
   };
 };
 
-const parseParcelInput = (input: string): parcel => {
+const parseParcelInput = (input: string): ParcelInput => {
   const inputArr = input.split(' ');
 
   if (inputArr.length < 4) {
@@ -118,7 +48,7 @@ const parseParcelInput = (input: string): parcel => {
   };
 };
 
-const parseFleetInput = (input: string): fleet => {
+const parseFleetInput = (input: string): FleetInput => {
   const inputArr = input.split(' ');
 
   if (inputArr.length < 3) {
