@@ -11,18 +11,24 @@ const rl = readline.createInterface({
 });
 
 const ofr001 = new Offer(OffersJson.offers[0] as OfferType);
-
 const ofr002 = new Offer(OffersJson.offers[1] as OfferType);
-
 const ofr003 = new Offer(OffersJson.offers[2] as OfferType);
 
 const offers: Offer[] = [ofr001, ofr002, ofr003];
+
+const isNumeric = (value: string) => {
+  return /^\d+$/.test(value);
+};
 
 const parseCourierInput = (input: string): CourierInput => {
   const inputArr = input.split(' ');
 
   if (inputArr.length < 2) {
     throw new Error('Your courier input is invalid');
+  }
+
+  if (!isNumeric(inputArr[0]) || !isNumeric(inputArr[1])) {
+    throw new Error('Invalid input in courier input');
   }
 
   return {
@@ -36,6 +42,10 @@ const parseParcelInput = (input: string): ParcelInput => {
 
   if (inputArr.length < 4) {
     throw new Error('Your parcel input is invalid');
+  }
+
+  if (!isNumeric(inputArr[1]) || !isNumeric(inputArr[2])) {
+    throw new Error('Invalid input in parcel input');
   }
 
   const offer = offers.find((offer) => offer.title === inputArr[3]);
@@ -55,6 +65,14 @@ const parseFleetInput = (input: string): FleetInput => {
     throw new Error('Your fleet input is invalid');
   }
 
+  if (
+    !isNumeric(inputArr[0]) ||
+    !isNumeric(inputArr[1]) ||
+    !isNumeric(inputArr[2])
+  ) {
+    throw new Error('Invalid input in fleet input');
+  }
+
   return {
     vehicleQty: parseInt(inputArr[0]),
     maxSpeed: parseInt(inputArr[1]),
@@ -67,63 +85,68 @@ const isDeliveryTimeSkipped = (input: string): boolean => input === 'n';
 const main = async () => {
   let parcels: Parcel[] = [];
 
-  // Ask for base delivery cost and number of parcels
-  const rawCourierInput = (await new Promise((resolve) =>
-    rl.question('[baseDeliveryCost] [no. of parcel]', resolve)
-  )) as string;
-  const parsedCourierInput = parseCourierInput(rawCourierInput);
-
-  const parcelInputs = Array.from(
-    Array(parsedCourierInput.noOfParcel).keys()
-  ).map(() => '[pkg_id] [pkg_weight] [pkg_distance] [offer]');
-
-  // Ask for each package info: id, weight, distance and offer
-  for (const parcelInput of parcelInputs) {
-    const rawParcelInput = (await new Promise((resolve) =>
-      rl.question(parcelInput, resolve)
+  try {
+    // Ask for base delivery cost and number of parcels
+    const rawCourierInput = (await new Promise((resolve) =>
+      rl.question('[baseDeliveryCost] [no. of parcel]', resolve)
     )) as string;
+    const parsedCourierInput = parseCourierInput(rawCourierInput);
 
-    const parsedParcelInput = parseParcelInput(rawParcelInput);
+    const parcelInputs = Array.from(
+      Array(parsedCourierInput.noOfParcel).keys()
+    ).map(() => '[pkg_id] [pkg_weight] [pkg_distance] [offer]');
 
-    parcels.push(
-      new Parcel({
-        id: parsedParcelInput.id,
-        baseDeliveryCost: parsedCourierInput.baseDeliveryCost,
-        weight: parseInt(parsedParcelInput.weight),
-        distance: parseInt(parsedParcelInput.distance),
-        offer: parsedParcelInput.offer
-      })
-    );
-  }
+    // Ask for each package info: id, weight, distance and offer
+    for (const parcelInput of parcelInputs) {
+      const rawParcelInput = (await new Promise((resolve) =>
+        rl.question(parcelInput, resolve)
+      )) as string;
 
-  const toCalculateCostInput = (await new Promise((resolve) =>
-    rl.question('Do you want to calculate each delivery cost? (y/n)', resolve)
-  )) as string;
-  const deliveryTimeSkipped = isDeliveryTimeSkipped(toCalculateCostInput);
+      const parsedParcelInput = parseParcelInput(rawParcelInput);
 
-  // Terminate cmd if intend to skip delivery time calculation
-  if (deliveryTimeSkipped) {
-    rl.close();
-  } else {
-    // Ask for number of vehicles, max speed and max carriable weight
-    const rawFleetInput = (await new Promise((resolve) =>
-      rl.question(
-        '[no_of_vehicles] [max_speed] [max_carriable_weight]',
-        resolve
-      )
+      parcels.push(
+        new Parcel({
+          id: parsedParcelInput.id,
+          baseDeliveryCost: parsedCourierInput.baseDeliveryCost,
+          weight: parseInt(parsedParcelInput.weight),
+          distance: parseInt(parsedParcelInput.distance),
+          offer: parsedParcelInput.offer
+        })
+      );
+    }
+
+    const toCalculateCostInput = (await new Promise((resolve) =>
+      rl.question('Do you want to calculate each delivery cost? (y/n)', resolve)
     )) as string;
-    const parsedFleetInput = parseFleetInput(rawFleetInput);
+    const deliveryTimeSkipped = isDeliveryTimeSkipped(toCalculateCostInput);
 
-    // Close input
+    // Terminate cmd if intend to skip delivery time calculation
+    if (deliveryTimeSkipped) {
+      rl.close();
+    } else {
+      // Ask for number of vehicles, max speed and max carriable weight
+      const rawFleetInput = (await new Promise((resolve) =>
+        rl.question(
+          '[no_of_vehicles] [max_speed] [max_carriable_weight]',
+          resolve
+        )
+      )) as string;
+      const parsedFleetInput = parseFleetInput(rawFleetInput);
+
+      // Close input
+      rl.close();
+
+      const fleet = new Fleet({
+        parcels,
+        maxSpeed: parsedFleetInput.maxSpeed,
+        maxLoad: parsedFleetInput.maxLoad,
+        vehicleQty: parsedFleetInput.vehicleQty
+      });
+      parcels = fleet.start();
+    }
+  } catch (error) {
+    console.error('Oops! Something went wrong. Please retry.', error);
     rl.close();
-
-    const fleet = new Fleet({
-      parcels,
-      maxSpeed: parsedFleetInput.maxSpeed,
-      maxLoad: parsedFleetInput.maxLoad,
-      vehicleQty: parsedFleetInput.vehicleQty
-    });
-    parcels = fleet.start();
   }
 
   console.log(
